@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,19 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
-
 @Composable
 fun DragAndDropBoxes(modifier: Modifier = Modifier) {
     Column(modifier = Modifier.fillMaxSize()) {
-
-
         var selectedAnimation by remember { mutableStateOf("rotate") }
-
-
         var moveX by remember { mutableStateOf(0f) }
         var moveY by remember { mutableStateOf(0f) }
 
+        // Top Row with Larger Boxes
         Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -81,24 +77,22 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxHeight()
-                        .padding(10.dp)
-                        .border(1.dp, Color.Black)
+                        .padding(0.dp)
+                        .border(2.dp, Color.Black)
+                        .size(150.dp)
                         .dragAndDropTarget(
                             shouldStartDragAndDrop = { event ->
-                                event
-                                    .mimeTypes()
-                                    .contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                                event.mimeTypes().contains(ClipDescription.MIMETYPE_TEXT_PLAIN)
                             },
                             target = remember {
                                 object : DragAndDropTarget {
                                     override fun onDrop(event: DragAndDropEvent): Boolean {
-                                        moveX = when(index){
+                                        moveX = when (index) {
                                             0 -> +30f
                                             1 -> -30f
                                             else -> +0f
                                         }
-                                        moveY = when(index){
+                                        moveY = when (index) {
                                             2 -> +30f
                                             3 -> -30f
                                             else -> +0f
@@ -119,7 +113,7 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.image),
-                            contentDescription = "My Image",
+                            contentDescription = "Draggable Image",
                             modifier = Modifier
                                 .background(Color.White)
                                 .fillMaxSize()
@@ -163,7 +157,6 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
             )
         )
 
-
         val stretchSize by animateFloatAsState(
             targetValue = 2f,
             animationSpec = infiniteRepeatable(
@@ -171,8 +164,6 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                 repeatMode = RepeatMode.Reverse
             )
         )
-
-
 
         Box(
             modifier = Modifier
@@ -185,7 +176,7 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                     .size(50.dp)
                     .offset(moveX.dp, moveY.dp)
                     .graphicsLayer {
-                        when(selectedAnimation){
+                        when (selectedAnimation) {
                             "rotate" -> rotationZ = rotationAngle
                             "stretch" -> {
                                 scaleX = stretchSize
@@ -197,23 +188,35 @@ fun DragAndDropBoxes(modifier: Modifier = Modifier) {
                     .background(Color.Green)
                     .align(Alignment.Center)
             )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp)
+        ) {
+            Button(onClick = { moveX -= 30f }) {
+                Text("Left")
+            }
 
-            Row(horizontalArrangement = Arrangement.Center) {
+            Button(onClick = { moveY -= 30f }) {
+                Text("Up")
+            }
 
-                Button(
-                    onClick = {
-                        moveX = 0f
-                        moveY = 0f
-                    }
-                ) {
-                    Text("Reset")
-                }
+            Button(onClick = { moveY += 30f }) {
+                Text("Down")
+            }
 
-
+            Button(onClick = { moveX += 30f }) {
+                Text("Right")
+            }
+            Button(onClick = {
+                moveX = 0f
+                moveY = 0f
+            }) {
+                Text("Reset")
             }
         }
     }
 }
-
